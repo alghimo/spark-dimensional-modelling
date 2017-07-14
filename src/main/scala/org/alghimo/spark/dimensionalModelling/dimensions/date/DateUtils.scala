@@ -1,4 +1,4 @@
-package org.alghimo.spark.dimensionalModeling.dimensions
+package org.alghimo.spark.dimensionalModelling.dimensions.date
 
 import org.joda.time.DateTime
 

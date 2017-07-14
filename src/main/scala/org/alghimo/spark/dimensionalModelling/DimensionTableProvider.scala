@@ -1,4 +1,4 @@
-package org.alghimo.spark.dimensionalModeling
+package org.alghimo.spark.dimensionalModelling
 
 import org.apache.spark.sql.{Column, Dataset, Encoder, Encoders}
 

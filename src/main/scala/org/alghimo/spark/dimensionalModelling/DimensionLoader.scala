@@ -1,4 +1,4 @@
-package org.alghimo.spark.dimensionalModeling
+package org.alghimo.spark.dimensionalModelling
 
 /**
   * Created by alghimo on 6/6/2017.
@@ -66,7 +66,7 @@ trait DimensionLoader[NATURAL_DIM <: (Product with Serializable), ENRICHED_DIM <
     * High level, this should look like:
     * newDimsWithoutKey = ds.as('n)
     *   .join(dimensionTable.as('d), naturalKeyColumns("d"), "left")
-    *   .filter(s"d.${skColumnName} IS NULL")
+    *   .filter(s"d.\${skColumnName} IS NULL")
     *   .selectExpr("n.*")
     *   .as[D_WITHOUT_KEY]
     * maxSk = dimensionTable.select(max(skColumn)).as[Long].collect

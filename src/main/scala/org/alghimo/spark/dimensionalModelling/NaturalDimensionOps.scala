@@ -1,4 +1,4 @@
-package org.alghimo.spark.dimensionalModeling
+package org.alghimo.spark.dimensionalModelling
 
 import org.apache.spark.sql._
 import org.apache.spark.sql.expressions.Window
@@ -22,6 +22,17 @@ trait NaturalDimensionOps[NATURAL_DIM <: (Product with Serializable), ENRICHED_D
 
   def naturalToEnrichedDimension(n: NATURAL_DIM): ENRICHED_DIM
 
+  /**
+    * Transforms a DataFrame into Enriched dimensions.
+    * @param df The dataframe to extract the enriched dimensions from.
+    * @param naturalKeyExpressions Multiple sequences of strings that define how to extract dimensions.
+    * For instance, let's say that your Dataframe contains dates in the "created_date" and "updated_date" columns,
+    * The call to this method would be like:
+    * {{{
+    *   dfToEnrichedDimensions(myDf, Seq("created_date"), Seq("updated_date")
+    * }}}
+    * @return
+    */
   def dfToEnrichedDimensions(df: DataFrame, naturalKeyExpressions: Seq[String]*): EnrichedDimensions = {
     val naturalToEnrichedDimension = this.naturalToEnrichedDimension _
     dfToNaturalDimensions(df, naturalKeyExpressions:_*).map(naturalToEnrichedDimension)

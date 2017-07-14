@@ -1,7 +1,7 @@
-package org.alghimo.spark.dimensionalModeling.dimensions
+package org.alghimo.spark.dimensionalModelling.dimensions.date
 
-import org.alghimo.spark.dimensionalModeling.DimensionLoader
-import org.apache.spark.sql.{Encoder, Encoders, SparkSession}
+import org.alghimo.spark.dimensionalModelling.DimensionLoader
+import org.apache.spark.sql.{Encoders, SparkSession}
 
 /**
   * Created by alghimo on 6/6/2017.
@@ -37,7 +37,7 @@ class DateDimensionLoader(override val dimensionTableName: String, @transient ov
     * Usually, to get the resulting dimension, it takes all the values from the enriched dimension, and the special columns
     * from the existing dimension: surrogate key, is_current, start and end timestamps. With sql it could look like:
     * allUpdatedDims
-    *   .selectExpr(s"_2.${skColumnName}", s"_2.${isCurrentVersionColumnName}", s"_2.${startTimestampColumnName}", s"_2.${endTimestampColumnName}", "_1.*")
+    *   .selectExpr(s"_2.\${skColumnName}", s"_2.\${isCurrentVersionColumnName}", s"_2.\${startTimestampColumnName}", s"_2.\${endTimestampColumnName}", "_1.*")
     *   .selectExpr(currentDims.columns:_*)
     *   .as[D_WITH_KEY]
     * @param enrichedWithDimension Tuple (ENRICHED_DIM, DIM)
@@ -48,26 +48,27 @@ class DateDimensionLoader(override val dimensionTableName: String, @transient ov
     val e: EnrichedDateDimension = enrichedWithDimension._1
 
     d.copy(
-      date             = e.date,
-      day              = e.day,
-      month            = e.month,
-      quarter          = e.quarter,
-      semester         = e.semester,
-      year             = e.year,
-      day_of_week      = e.day_of_week,
-      day_of_week_name = e.day_of_week_name,
-      day_of_year      = e.day_of_year,
-      is_weekend       = e.is_weekend,
-      week_of_year     = e.week_of_year,
-      biweek_of_year   = e.biweek_of_year,
-      month_name       = e.month_name,
-      month_name_short = e.month_name_short,
-      day_seq          = e.day_seq,
-      week_seq         = e.week_seq,
-      biweek_seq       = e.biweek_seq,
-      month_seq        = e.month_seq,
-      quarter_seq      = e.quarter_seq,
-      semester_seq     = e.semester_seq
+      date                   = e.date,
+      day                    = e.day,
+      month                  = e.month,
+      quarter                = e.quarter,
+      semester               = e.semester,
+      year                   = e.year,
+      day_of_week            = e.day_of_week,
+      day_of_week_name       = e.day_of_week_name,
+      day_of_week_name_short = e.day_of_week_name_short,
+      day_of_year            = e.day_of_year,
+      is_weekend             = e.is_weekend,
+      week_of_year           = e.week_of_year,
+      biweek_of_year         = e.biweek_of_year,
+      month_name             = e.month_name,
+      month_name_short       = e.month_name_short,
+      day_seq                = e.day_seq,
+      week_seq               = e.week_seq,
+      biweek_seq             = e.biweek_seq,
+      month_seq              = e.month_seq,
+      quarter_seq            = e.quarter_seq,
+      semester_seq           = e.semester_seq
     )
   }
 
@@ -84,6 +85,6 @@ class DateDimensionLoader(override val dimensionTableName: String, @transient ov
     val d: DateDimension         = enrichedWithDimension._2
     val e: EnrichedDateDimension = enrichedWithDimension._1
 
-    (e, d.copy(dim_is_current = false, dim_end_ts = Some(e.dim_timestamp)))
+    (e, d.copy(_dim_is_current = false, _dim_end_ts = Some(e._dim_timestamp)))
   }
 }

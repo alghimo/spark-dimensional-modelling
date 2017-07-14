@@ -1,4 +1,4 @@
-package org.alghimo.spark.dimensionalModeling
+package org.alghimo.spark.dimensionalModelling
 
 import org.apache.spark.sql.{Dataset, Encoder, Encoders}
 import org.apache.spark.sql.functions.expr
@@ -37,7 +37,7 @@ trait DimensionOps[ENRICHED_DIM <: (Product with Serializable), DIM <: (Product 
     * Usually, to get the resulting dimension, it takes all the values from the enriched dimension, and the special columns
     * from the existing dimension: surrogate key, is_current, start and end timestamps. With sql it could look like:
     * allUpdatedDims
-    *   .selectExpr(s"_2.${skColumnName}", s"_2.${isCurrentVersionColumnName}", s"_2.${startTimestampColumnName}", s"_2.${endTimestampColumnName}", "_1.*")
+    *   .selectExpr(s"_2.\${skColumnName}", s"_2.\${isCurrentVersionColumnName}", s"_2.\${startTimestampColumnName}", s"_2.\${endTimestampColumnName}", "_1.*")
     *   .selectExpr(currentDims.columns:_*)
     *   .as[D_WITH_KEY]
     * @param enrichedWithDimension Tuple (ENRICHED_DIM, DIM)
