@@ -1,7 +1,7 @@
 name := "spark-dimensional-modelling"
 organization := "org.alghimo"
 val sparkVersion = "2.1.0"
-version := s"spark_${sparkVersion}_0.1.1-SNAPSHOT"
+version := s"spark_${sparkVersion}_0.1.2-SNAPSHOT"
 publishTo := Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository")))
 resolvers += "Local Maven" at Path.userHome.asFile.toURI.toURL + ".m2/repository"
 

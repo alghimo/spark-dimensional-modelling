@@ -54,6 +54,10 @@ trait DimensionTableProvider[DIM <: (Product with Serializable)]
       .mode("overwrite")
       .saveAsTable(dimensionTableName)
 
+    if (useTempTable) {
+      spark.sql(s"DROP TABLE ${tmpDimensionTableName} PURGE")
+    }
+
     dimensionTable(refresh = true)
   }
 }
