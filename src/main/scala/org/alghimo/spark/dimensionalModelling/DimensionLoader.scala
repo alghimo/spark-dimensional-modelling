@@ -31,11 +31,14 @@ trait DimensionLoader[NATURAL_DIM <: (Product with Serializable), ENRICHED_DIM <
     * @return The new dimension table
     */
   def extractDimensions(enrichedDimensions: EnrichedDimensions, refreshDimensionTable: Boolean = false): Dimensions = {
-    val notCurrentDims              = notCurrentDimensions(refreshDimensionTable)
-    val unchangedDims               = unchangedDimensions(enrichedDimensions)
-    val newDims                     = newDimensions(enrichedDimensions)
-    val (newType2Dims, updatedDims) = updatedDimensions(enrichedDimensions)
-    val allNewDims                  = enrichedDimensionsToDimensions(newDims.union(newType2Dims))
+    val columns = dimensionTable(refreshDimensionTable).columns
+
+    val notCurrentDims               = notCurrentDimensions(refreshDimensionTable).selectExpr(columns:_*).as[DIM]
+    val unchangedDims                = unchangedDimensions(enrichedDimensions).selectExpr(columns:_*).as[DIM]
+    val newDims                      = newDimensions(enrichedDimensions)
+    val (newType2Dims, dimsToUpdate) = updatedDimensions(enrichedDimensions)
+    val updatedDims                  = dimsToUpdate.selectExpr(columns:_*).as[DIM]
+    val allNewDims                   = enrichedDimensionsToDimensions(newDims.union(newType2Dims)).selectExpr(columns:_*).as[DIM]
 
     notCurrentDims
       .union(unchangedDims)
