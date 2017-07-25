@@ -31,13 +31,16 @@ trait DimensionLoader[NATURAL_DIM <: (Product with Serializable), ENRICHED_DIM <
     * @return The new dimension table
     */
   def extractDimensions(enrichedDimensions: EnrichedDimensions, refreshDimensionTable: Boolean = false): Dimensions = {
+    println(s"Extracting dimensions with refresh dimension table = $refreshDimensionTable")
     val columns = dimensionTable(refreshDimensionTable).columns
 
+    println("Getting dimensions that are not current")
     val notCurrentDims               = notCurrentDimensions(refreshDimensionTable).selectExpr(columns:_*).as[DIM]
     val unchangedDims                = unchangedDimensions(enrichedDimensions).selectExpr(columns:_*).as[DIM]
     val newDims                      = newDimensions(enrichedDimensions)
     val (newType2Dims, dimsToUpdate) = updatedDimensions(enrichedDimensions)
     val updatedDims                  = dimsToUpdate.selectExpr(columns:_*).as[DIM]
+    println("Converting enriched dimensions to dimensions")
     val allNewDims                   = enrichedDimensionsToDimensions(newDims.union(newType2Dims)).selectExpr(columns:_*).as[DIM]
 
     notCurrentDims
@@ -59,8 +62,10 @@ trait DimensionLoader[NATURAL_DIM <: (Product with Serializable), ENRICHED_DIM <
     * @return
     */
   def unchangedDimensions(allEnrichedDimensions: EnrichedDimensions, refreshDimensionTable: Boolean = false): Dimensions = {
+    println("Getting unchanged dimensions")
     val enrichedDimensions = keepOnlyMostRecentEvents(allEnrichedDimensions)
     val currentDims = currentDimensions(refreshDimensionTable)
+
     keepUnchanged(joinOnNaturalKeys(currentDims, enrichedDimensions, "left"))
   }
 
@@ -83,6 +88,7 @@ trait DimensionLoader[NATURAL_DIM <: (Product with Serializable), ENRICHED_DIM <
     * @return
     */
   def newDimensions(allEnrichedDimensions: EnrichedDimensions, refreshDimensionTable: Boolean = false): EnrichedDimensions = {
+    println("Getting new dimensions")
     val enrichedDimensions = keepOnlyMostRecentEvents(allEnrichedDimensions)
     val currentDims = currentDimensions(refreshDimensionTable)
 
@@ -99,16 +105,19 @@ trait DimensionLoader[NATURAL_DIM <: (Product with Serializable), ENRICHED_DIM <
     * @return
     */
   def updatedDimensions(allEnrichedDimensions: EnrichedDimensions, refreshDimensionTable: Boolean = false): (EnrichedDimensions, Dimensions) = {
+    println("Getting updated dimensions")
     val enrichedDimensions = keepOnlyMostRecentEvents(allEnrichedDimensions)
     val currentDims = currentDimensions(refreshDimensionTable)
     val enrichedWithCurrentDims = joinOnNaturalKeys(enrichedDimensions, currentDims, "inner")
 
     val allUpdatedDims = enrichedWithCurrentDims.filter(e => areDifferent(e._1, e._2))
 
+    println("Getting type1 changes from updated dimensions")
     val type1Updates = allUpdatedDims
       .filter(d => !hasType2Changes(d))
       .map(type1Change)
 
+    println("Getting type2 changes from updated dimensions")
     val rawType2Updates = allUpdatedDims
       .filter(hasType2Changes _)
       .map(type2Changes)
@@ -137,7 +146,7 @@ trait DimensionLoader[NATURAL_DIM <: (Product with Serializable), ENRICHED_DIM <
     * @return
     */
   def extractDimensionsAndSave[X: ClassTag](naturalDimensions: NaturalDimensions, refreshDimensionTable: Boolean): Dimensions =
-    extractDimensionsAndSave(naturalDimensions.map(naturalToEnrichedDimension), refreshDimensionTable)
+    extractDimensionsAndSave(naturalToEnrichedDimensions(naturalDimensions), refreshDimensionTable)
 
   /**
     * Extracts dimensions from a dataframe and returns the new dimension table (saving it)
@@ -155,7 +164,7 @@ trait DimensionLoader[NATURAL_DIM <: (Product with Serializable), ENRICHED_DIM <
     * @return The new dimension table
     */
   def extractDimensions[X: ClassTag](naturalDimensions: NaturalDimensions, refreshDimensionTable: Boolean): Dimensions =
-    extractDimensions(naturalDimensions.map(naturalToEnrichedDimension), refreshDimensionTable)
+    extractDimensions(naturalToEnrichedDimensions(naturalDimensions), refreshDimensionTable)
 
   /**
     * Extracts dimensions from a dataframe and returns the new dimension table (without saving it)

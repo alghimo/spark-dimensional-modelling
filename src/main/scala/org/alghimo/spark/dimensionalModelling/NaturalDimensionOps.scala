@@ -13,6 +13,7 @@ trait NaturalDimensionOps[NATURAL_DIM <: (Product with Serializable), ENRICHED_D
   with Serializable
 {
   def dfToNaturalDimensions(df: DataFrame, naturalKeyExpressions: Seq[String]*): NaturalDimensions = {
+    println("Creating natural dimensionions from dataframe")
     naturalKeyExpressions
       .map(df.selectExpr(_:_*))
       .reduce(_.union(_))
@@ -34,11 +35,13 @@ trait NaturalDimensionOps[NATURAL_DIM <: (Product with Serializable), ENRICHED_D
     * @return
     */
   def dfToEnrichedDimensions(df: DataFrame, naturalKeyExpressions: Seq[String]*): EnrichedDimensions = {
+    println("Creating enriched dimensionions from dataframe")
     val naturalToEnrichedDimension = this.naturalToEnrichedDimension _
     dfToNaturalDimensions(df, naturalKeyExpressions:_*).map(naturalToEnrichedDimension)
   }
 
   def naturalToEnrichedDimensions(naturalDims: NaturalDimensions): EnrichedDimensions = {
+    println("Creating enriched dimensionions from natural dimensions")
     val naturalToEnrichedDimension = this.naturalToEnrichedDimension _
     naturalDims.map(naturalToEnrichedDimension)
   }

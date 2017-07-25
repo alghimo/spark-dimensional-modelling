@@ -36,6 +36,7 @@ trait DimensionTableProvider[DIM <: (Product with Serializable)]
   def notCurrentDimensions(refresh: Boolean = false): Dataset[DIM] = dimensionTable(refresh).filter(s"NOT ${isCurrentColumnName}")
 
   def save(ds: Dataset[DIM], useTempTable: Boolean = true): Dataset[DIM] = {
+    println("Saving dimensions..")
     val toSave = if (useTempTable) {
       ds
         .coalesce(maxPartitionsInDimensionTable)
